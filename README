@@ -1,0 +1,24 @@
+
+
+This program enables storing documentation projects in one place and share files
+between projects easily.
+
+The documentation is available in the RST (reStructuredText) format under
+*./doc/source* of this project.
+
+The sources are found under the *src* directory. The program is written in
+Python. For more details about the implementation, see the documentation in the
+source code the documentation.
+
+The *org* directory contains the *backlog* (*./org/backlog.org*), *journal*
+(*./org/journal.org*) and *history* (*./org/history.org*). These are *org-mode*
+files. It is recommended that you use the *emacs* text editor in order to
+benefit from this environment.
+
+The *backlog* collects user stories that have not been implemented yet. The
+*journal* contains the user stories that are the focus of the current
+sprint. The *history* contains the implemented user stories.
+
+The *tests* directory contains tests in the doctest format. The names of files
+are the abbreviations created based on user stories. These tests are executable
+from the *journal*.

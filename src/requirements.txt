@@ -1,0 +1,3 @@
+dli
+gitpython==3.0.4
+jira==2.0.0

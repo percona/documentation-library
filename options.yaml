@@ -1,0 +1,42 @@
+default_doc_format: 'rst'
+doc_file_extensions:
+  - rst
+  - md
+  - txt
+  - png
+  - py
+  - ico
+default_encoding: utf-8
+key_length: 12
+data_file_suffix: data
+message_screen_width: 80
+require_project_code_in_ticket: False
+message_horizontal_line: '.'
+jira_site: https://jira.percona.com
+project_code: ''
+operation: ''
+source_dir: ''
+ticket_id: ''
+
+path:
+  data_dir: /home/user/documentation-library/data
+  workspace: /home/user/workspace/documentation-library
+
+dir_name:
+  meta: meta
+  lib: lib
+  data: data
+  doc_source: source
+
+sep:
+  code: '-'
+  opt: '-'
+  name: '_'
+  commit_message_primary: ':'
+  commit_message_secondary: '--'
+
+directive:
+  prefix: '..'
+  name_space_sep: ':'
+  value_sep: ':'
+  default_name_space: 'dL'
