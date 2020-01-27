@@ -16,7 +16,7 @@ class Alert:
     
     @staticmethod
     def project_has_unsaved_changes(project_code):
-        return '[{}] has uncommitted changes'.format(project_code)
+        return 'Project [{}] has uncommitted changes'.format(project_code)
 
     @staticmethod
     def project_code_not_in_jira_ticket(project_code, ticket_code):
@@ -26,6 +26,11 @@ class Alert:
     @staticmethod
     def git_repo_not_found(path):
         return "No Git repository has been detected under '{}'".format(path)
+
+    @staticmethod
+    def feature_branch_too_many(project_code, library):
+        return 'More than one feature branch is detected for {} under [{}]'.format(project_code, library)
+
 
 
 class Info:
@@ -42,9 +47,21 @@ class Info:
     def commit_message(ticket_id):
         return "[MERGED] JIRA ticket '{}'".format(ticket_id)
 
+    @staticmethod
+    def work_offline():
+        return 'Using offline resources ...'
+
+    @staticmethod
+    def DEBUG(mark, value):
+        print('[DEBUG] {}: {}'.format(mark, value))
 
     
 class Help:
+    readme_path = '../README'
+
+    @staticmethod
+    def detect_project():
+        return 'Detect specific issues in the given context'
 
     @staticmethod
     def register_project():
@@ -62,6 +79,12 @@ class Help:
     def merge_project():
         return 'Scan the project and reuse its assets in other projects'
 
+    @staticmethod
+    def no_operation(readme_file_path):
+        with open(readme_file_path) as readme:
+            for _line_ in readme:
+                yield '\t{}'.format(_line_)
+    
 class Request:
 
     @staticmethod
