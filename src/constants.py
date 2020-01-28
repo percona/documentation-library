@@ -13,6 +13,7 @@ class OperationName:
     checkout = 'checkout'
     checkin = 'checkin'
     merge = 'merge'
+    detect = 'detect'
 
 
 class UIArgumentName:
@@ -23,6 +24,8 @@ class UIArgumentName:
     project_code = 'project_code'
     ticket_id = 'ticket_id'
     include = 'include'
+    context = 'context' # such as paragraph (default)
+    target = 'target' # such as duplicate (default)
 
 
 
@@ -52,6 +55,12 @@ class DirectiveNameSpace:
 
 
 class OptionName:
+    '''Names of options; each subclass represents a group. 
+
+    Values must valid Python identifiers.
+    '''
+    company_name = 'company_name'
+    project_name = 'project_name'
     default_doc_format = 'default_doc_format'
     doc_file_extensions = 'doc_file_extensions'
     default_encoding = 'default_encoding'
@@ -61,12 +70,15 @@ class OptionName:
     require_project_code_in_ticket = 'require_project_code_in_ticket'
     message_horizontal_line = 'message_horizontal_line'
     jira_site = 'jira_site'
+    allow_remote_requests = 'allow_remote_requests'
+    interface_type = 'interface_type'
+    git_in_workspace = 'git_in_workspace'
 
     class Path:
         _ = 'path'
         data_dir = 'data_dir'
         workspace = 'workspace'
-        
+        readme = 'readme'
 
     class DirName:
         _ = 'dir_name'
@@ -82,6 +94,7 @@ class OptionName:
         name = 'name'
         commit_message_primary = 'commit_message_primary'
         commit_message_secondary = 'commit_message_secondary'
+
 
     class Directive:
         _ = 'directive'
@@ -104,6 +117,9 @@ class NameFactory:
         '''Replaces all whitespace and punctuation characters in the supplied
         text with the given separator. Consecutive replaceable characters are
         reduced to one occurance.'''
+
+        # TODO: This method is identical to DetectOperation._simplify
+        #       Refactor to use a common function or method
         
         pattern = "[{}{}]".format(whitespace, punctuation)
         processed = [each

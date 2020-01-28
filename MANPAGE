@@ -1,0 +1,29 @@
+.\" Manpage for documentation Library.
+.TH man 1 "27 Jan 2020" "v0.2" "documentation Library man page"
+.SH NAME
+dli \- Store and manage multiple documentation projects in one library. 
+.SH SYNOPSIS
+dLi add --project-code PROJECT_CODE --source-dir SOURCE_DIR
+
+dLi checkout --project-code PROJECT_CODE --ticket-id TICKET_ID
+
+dLi checkin --project-code PROJECT_CODE --ticket-id TICKET_ID
+
+.SH DESCRIPTION
+dli maintains a common library of resources reusable by multiple documentation projects.
+.SH SUB COMMANDS
+add \- Add an existing documentation project to the library
+
+checkout \- Restore the structure of the documentation project under the workspace
+
+checkin \- Load the resources of the given documentation project to the library from the workspace
+.SH OPTIONS
+--help \- Display this page
+.SH SEE ALSO
+dli(1)
+.SH BUGS
+Many unknown
+.SH AUTHOR
+Borys Belinsky (borys.belinsky@percona.com)
+.SH LICENSE
+This software is distributed under the GNU GENERAL PUBLIC LICENSE Version 3

@@ -43,9 +43,11 @@ class CLI:
                                       name_sep_char=name_sep_char)
 
         project_code = cli_attr.make(ui_name.project_code)
-        source_dir   = cli_attr.make(ui_name.source_dir)
-        ticket_id    = cli_attr.make(ui_name.ticket_id)
-        include      = cli_attr.make(ui_name.include)
+        source_dir = cli_attr.make(ui_name.source_dir)
+        ticket_id = cli_attr.make(ui_name.ticket_id)
+        include = cli_attr.make(ui_name.include)
+        context = cli_attr.make(ui_name.context)
+        target = cli_attr.make(ui_name.target)
 
         main_command = argparse.ArgumentParser()
         sub_commands = main_command.add_subparsers(dest=ui_name.operation)
@@ -89,26 +91,42 @@ class CLI:
                               dest=include.name,
                               required=False)
 
+        detect_sc = sub_commands.add_parser(op_name.detect,
+                                            help=Help.detect_project())
+        detect_sc.add_argument(project_code.option,
+                               dest=project_code.name,
+                               required=True)
+        detect_sc.add_argument(target.option,
+                               dest=target.name,
+                               required=False)
+        detect_sc.add_argument(context.option,
+                               dest=context.name,
+                               required=False)
+
         self.arguments = vars(main_command.parse_args())
 
+
+
 class CLIMessage:
-    def __init__(self, prompt, text_width, legend=None, decoration_token=' '):
-        self._text_width = int(text_width)
-        self._decoration = str(decoration_token[0]) * self._text_width
-        self._prompt = prompt
+    def __init__(self, title, prompt, text_width, legend=None, decoration_token=' '):
+        self.title = title.title()
+        self.text_width = int(text_width)
+        self.decoration = str(decoration_token[0]) * self.text_width
+        self.prompt = prompt
         if legend:
-            self._legend = legend[:self._text_width]
+            self.legend = legend[:self.text_width]
         else:
-            self._legend = ''
+            self.legend = ''
 
 
     def make(self):
-        contents = {'legend': self._legend,
-                   'prompt': self._prompt,
-                   'decoration':self._decoration}
+        contents = {'title': self.title,
+                    'legend': self.legend,
+                    'prompt': self.prompt,
+                    'decoration':self.decoration}
         message = ''
-        if self._legend:
-            message = '{legend}\n{decoration}\n{prompt}: '.format(**contents)
+        if self.legend:
+            message = '\n{title}\n{decoration}\n{legend}\n{decoration}\n{prompt}: '.format(**contents)
         else:
-            message = '{prompt}: '.format(**contents)
+            message = '\n{title}\n{decoration}\n{prompt}: '.format(**contents)
         return message

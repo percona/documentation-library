@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""This module stores objects that do not change throughout the life time of the
-program."""
+'''This module stores objects that do not change throughout the life time of the
+program.'''
 
 
 class MetaSignals:
@@ -51,4 +51,19 @@ class VerificationSignals:
 class JIRASignals:
     class TicketSummaryUpdate:
         class Ok: pass
+        class Restored: pass
         class Failed: pass
+
+
+
+class TargetMark:
+    '''Collects target marks, which are types of action that an operation may accomplish'''
+    class Duplicate:
+        '''Bound to the detect operation, it marks what phenomenae must be detected'''
+        pass
+
+
+
+class ContextMark:
+    class Paragraph: pass
+    class Sentence: pass

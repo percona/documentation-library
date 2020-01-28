@@ -1,3 +1,5 @@
+company_name: Percona
+project_name: 'documentation Library'
 default_doc_format: 'rst'
 doc_file_extensions:
   - rst
@@ -13,14 +15,17 @@ message_screen_width: 80
 require_project_code_in_ticket: False
 message_horizontal_line: '.'
 jira_site: https://jira.percona.com
+allow_remote_requests: False
+git_in_workspace: False
 project_code: ''
 operation: ''
 source_dir: ''
 ticket_id: ''
 
 path:
-  data_dir: /home/user/documentation-library/data
-  workspace: /home/user/workspace/documentation-library
+  data_dir: '../data'
+  workspace: ''
+  readme: '../README'
 
 dir_name:
   meta: meta

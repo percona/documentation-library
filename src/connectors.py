@@ -6,7 +6,7 @@ from string import whitespace, punctuation
 
 from jira import JIRA
 from git import Repo
-from messages import Alert
+from messages import Alert, Info
 from signals import VerificationSignals, GitSignals, JIRASignals
 from errors import JIRATicketNotFound, GitRepositoryNotFound
 
@@ -66,7 +66,6 @@ class JIRAConnector:
         class JIRATicketRequest:
             info = None
             status = None
-        found = None
         requested_ticket = self.connection.issue(ticket_id)
         if requested_ticket:
             JIRATicketRequest.info = JIRATicketInfo(ticket_id,
@@ -81,6 +80,7 @@ class JIRAConnector:
 
 
 class JIRATicketInfo:
+    '''Collects the essential information about the ticket.'''
     def __init__(self, ticket_id, text, ticket_id_sep):
         self._ticket_id = ticket_id.upper()
         self._ticket_id_sep = ticket_id_sep
@@ -88,24 +88,23 @@ class JIRATicketInfo:
         self._normalized_text = ''
         self.text = text
         self.branch_name = None
+        self.status = None
 
 
-    def update_summary(self, request_format):
-        status = None
-        if request_format:
-            self.text = input(request_format.make()).strip()
-            status = JIRASignals.TicketSummaryUpdate.Ok
-        else:
-            status = JIRASignals.TicketSummaryUpdate.Failed
-
-        return status
+    def update_summary(self, text):
+        self.text = input(text)
+        Info.DEBUG('new text', self.text)
+        Info.DEBUG('new normalized', self.normalized_text)
+        Info.DEBUG('update status', self.status)
+        return self.status
 
     
     def make_branch_name(self, product_id):
-        '''Combines the ticket information with the version component from product code
-        to make a branch name; tokens are delimited by a configurable 'code
-        separator'.'''
+        '''Combines the ticket information with the version component from product
+        code to make a branch name; tokens are delimited by a configurable 'code
+        separator'.
 
+        '''
         product_version = product_id.rpartition(self._ticket_id_sep)[-1]
         self.branch_name = self._ticket_id_sep.join([self.ticket_id,
                                                      self.normalized_text,
@@ -119,10 +118,10 @@ class JIRATicketInfo:
         '''
 
         pattern = '[{}{}]'.format(whitespace, punctuation)
-        return sep.join(token
-                        for token
-                        in re_split(pattern, self.text)
-                        if token).upper()
+        self._normalized_text =  sep.join([token
+                                           for token
+                                           in re_split(pattern, self.text)
+                                           if token.isalnum()]).upper()
 
     @property
     def ticket_id(self):
@@ -131,6 +130,7 @@ class JIRATicketInfo:
 
     @property
     def normalized_text(self):
+        '''Read only property. The new value can only be set with self.text'''
         return self._normalized_text
 
 
@@ -138,8 +138,19 @@ class JIRATicketInfo:
     def text(self):
         return self._text
 
+
     @text.setter
     def text(self, new_text):
-        if new_text.strip():
-            self._text = new_text
-            self._normalized_text = self._normalize(self._ticket_id_sep)
+        new_text = new_text.strip()
+        old_text = self._text
+        self._text = new_text
+        self._normalize(self._ticket_id_sep)
+        if self._normalized_text:
+            self.status = JIRASignals.TicketSummaryUpdate.Ok
+        elif not self._normalized_text and old_text:
+            self._text = old_text
+            self._normalize(self._ticket_id_sep)
+            self.status = JIRASignals.TicketSummaryUpdate.Restored
+        # self.text is empty and the new text is not appropriate
+        elif not self._normalized_text and not old_text:
+            self.status = JIRASignals.TicketSummaryUpdate.Failed
