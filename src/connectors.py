@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from os import sep as path_sep
+from os import sep as path_sep, path as os_path
 from re import split as re_split
 from string import whitespace, punctuation
 
@@ -12,34 +12,34 @@ from errors import JIRATicketNotFound, GitRepositoryNotFound
 
 
 class GitConnector:
-    def __init__(self, workspace_path):
-        self._workspace_path = workspace_path
-        self._repo = self._load_repository(self._workspace_path)
+    def __init__(self, workspace_path, with_initialize=False):
+        self._workspace_path = os_path.abspath(workspace_path)
+        self._repo = None
+        self.status = []
+        self._load_repository(with_initialize)
+        Info.DEBUG('Repo', self._workspace_path)
 
 
-    def make_branch(self, product_id, ticket_summary, doc_source_dir_path):
+    def make_branch(self, product_id, ticket_summary):
         '''Creates a Git branch based on the provided JIRA ticket object'''
+        self._repo.create_head(ticket_summary.make_branch_name(product_id)).checkout()
         git_index_file = self._repo.index
-        git_index_file.add(path_sep.join([self._workspace_path,
-                                          doc_source_dir_path]))
+        git_index_file.add(self._workspace_path)
+
         git_index_file.commit(ticket_summary.ticket_id + ": " + ticket_summary.text)
         
-        self._repo.create_head(ticket_summary.make_branch_name(product_id)).checkout()
+        #self._repo.create_head(ticket_summary.make_branch_name(product_id)).checkout()
+        self.status.append(GitSignals.BranchCreate.Ok)
 
-        return GitSignals.RepositoryCreate.Ok
 
-
-    def _load_repository(self, path):
+    def _load_repository(self, path, with_initialize=False):
         '''Attempts to create an instance of a Git repository under the provided path'''
-
-        repo =  Repo.init(self._workspace_path)
-
-        if not repo:
-            print(Alert.git_repo_not_found(self.workspace_path))
+        if with_initialize:
+            self._repo = Repo.init(self._workspace_path)
+            self.status.append(GitSignals.RepositoryCreate.Ok)
         else:
-            self._repo = repo
-
-        return repo
+            self._repo = Repo(self._workspace_path)
+            self.status.append(GitSignals.RepositoryLoad.Ok)
 
 
     @property
@@ -51,11 +51,6 @@ class GitConnector:
     def workspace_path(self):
         return self._workspace_path
 
-    @workspace_path.setter
-    def workspace_path(self, new_path):
-        if self._load_repository(new_path):
-            self._workspace_path = new_path
-        
 
 class JIRAConnector:
     def __init__(self, site_url):

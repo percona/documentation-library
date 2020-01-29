@@ -4,7 +4,7 @@
 from os.path import sep as path_sep, join as path_join
 from os import walk, makedirs
 from hashlib import sha1
-from shutil import copy as copy_file
+from shutil import copyfile as copy_file
 from collections import namedtuple
 
 from ui import CLIMessage
@@ -185,10 +185,10 @@ class CheckOutOperation(Operation):
         jira_ticket = self.request_jira_ticket()
         ticket_summary_updated = not JIRASignals.TicketSummaryUpdate.Failed in self.status
         if ticket_summary_updated and self.env.git_in_workspace:
-            repo = GitConnector(self.workspace_path)
+            repo = GitConnector(workspace_path=self.workspace_path,
+                                with_initialize=True)
             repo.make_branch(product_id=self.env.project_code,
-                             ticket_summary=jira_ticket,
-                             doc_source_dir_path=self.env.doc_source_dir_name)
+                             ticket_summary=jira_ticket)
             self.status.append(OperationStatusSignals.CheckOut.Ok)
 
     
@@ -196,19 +196,13 @@ class CheckOutOperation(Operation):
 class CheckInOperation(Operation):
     def __init__(self, env):
         super().__init__(env)
-        meta_doc = MetaDocument(product_code=self.env.project_code,
-                                data_dir_path=self.env.data_dir_path,
-                                meta_dir_name=self.env.meta_dir_name,
-                                data_file_suffix=self.env.data_file_suffix,
-                                record_id_sep=self.env.code_sep)
-        self.feature_branches = []
-        meta_doc.read()
-        self.copy_project(self.workspace_path)
-        jira_ticket = self.request_jira_ticket()
-        GitConnector(self.env.data_dir_path).make_branch(
-            product_id=self.env.project_code,
-            ticket_summary=jira_ticket,
-            doc_source_dir_path=self.env.lib_dir_name)
+        env.source_dir = self.workspace_path
+        AddOperation(env)
+
+        #jira_ticket = self.request_jira_ticket()
+        #GitConnector(self.env.data_dir_path).make_branch(
+        #    product_id=self.env.project_code,
+        #    ticket_summary=jira_ticket)
         self.status = OperationStatusSignals.CheckIn.Ok
 
 

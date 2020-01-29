@@ -31,14 +31,6 @@ from operations import (AddOperation,
 class DocProject:
     def __init__(self, env):
         self.env = env
-        if self.env.project_code:
-            self.code = self.env.project_code.strip().upper()
-            self.workspace_path = sep.join([self.env.workspace_dir_path,
-                                            self.code])
-        else:
-            self.code = None
-            self.workspace_path = None
-
     
     def detect(self):
         '''Searches each asset for actionable patterns'''
