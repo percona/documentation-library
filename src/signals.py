@@ -39,6 +39,12 @@ class GitSignals:
     class RepositoryCreate:
         class Ok: pass
         class Failed: pass
+    class RepositoryLoad:
+        class Ok: pass
+        class Failed: pass
+    class BranchCreate:
+        class Ok: pass
+        class Failed: pass
 
 
 class VerificationSignals:
